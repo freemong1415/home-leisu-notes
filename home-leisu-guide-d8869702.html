@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>雷速 · 信息流中的节拍</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f2f7f9;
+            color: #1f3b3f;
+            line-height: 1.6;
+            padding: 0 16px;
+        }
+
+        .page {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        /* 杂志专题横幅 */
+        .magazine-hero {
+            background: linear-gradient(145deg, #d4ecef 0%, #b8dbdf 100%);
+            border-radius: 40px 40px 20px 20px;
+            padding: 48px 32px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 12px 28px rgba(44, 98, 105, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .magazine-hero::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(72, 149, 153, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .magazine-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -40px;
+            width: 260px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(45, 110, 115, 0.06) 0%, transparent 65%);
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: #2b6e74;
+            color: #e5f4f6;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            padding: 4px 14px;
+            border-radius: 40px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            position: relative;
+            backdrop-filter: blur(2px);
+        }
+
+        .hero-title {
+            font-size: 2.6rem;
+            font-weight: 550;
+            letter-spacing: -0.02em;
+            color: #113e43;
+            line-height: 1.2;
+            max-width: 600px;
+            margin-bottom: 12px;
+        }
+
+        .hero-sub {
+            font-size: 1rem;
+            color: #1d5359;
+            max-width: 520px;
+            background: rgba(244, 251, 252, 0.6);
+            backdrop-filter: blur(1px);
+            padding: 8px 20px 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            border-left: 4px solid #327c83;
+        }
+
+        /* 背景说明卡片组 */
+        .context-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 44px;
+        }
+
+        .context-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 28px 24px;
+            box-shadow: 0 4px 12px rgba(46, 98, 105, 0.04);
+            border: 1px solid #d8e9ec;
+            backdrop-filter: blur(2px);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .context-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(50, 107, 114, 0.08);
+            border-color: #b0d2d7;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: block;
+            color: #2f7b82;
+        }
+
+        .context-card h3 {
+            font-size: 1.2rem;
+            font-weight: 560;
+            color: #1b4c52;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .context-card p {
+            font-size: 0.9rem;
+            color: #315f64;
+        }
+
+        /* 三段自然介绍 —— 杂志专题式卡片流 */
+        .feature-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            margin-bottom: 48px;
+        }
+
+        .feature-item {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 28px 28px 32px;
+            border: 1px solid #d3e6ea;
+            box-shadow: 0 2px 8px rgba(40, 90, 96, 0.03);
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 24px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-item:nth-child(even) {
+            flex-direction: row-reverse;
+            background: #f7fcfd;
+        }
+
+        .feature-index {
+            font-size: 1.8rem;
+            font-weight: 360;
+            color: #c4dde2;
+            min-width: 48px;
+            line-height: 1;
+            letter-spacing: -2px;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-content h2 {
+            font-size: 1.3rem;
+            font-weight: 550;
+            color: #19494f;
+            margin-bottom: 6px;
+        }
+
+        .feature-content p {
+            font-size: 0.94rem;
+            color: #295e63;
+            margin-bottom: 8px;
+        }
+
+        .feature-content .meta-tag {
+            display: inline-block;
+            background: #e2f1f4;
+            color: #256269;
+            font-size: 0.7rem;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 450;
+        }
+
+        /* FAQ 摘要 — 杂志侧栏风格 */
+        .faq-preview {
+            background: #ebf4f6;
+            border-radius: 28px;
+            padding: 28px 28px 24px;
+            margin-bottom: 40px;
+            border: 1px solid #c7dde1;
+        }
+
+        .faq-preview h3 {
+            font-size: 1.1rem;
+            font-weight: 520;
+            color: #18474d;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px 32px;
+            padding: 6px 0;
+        }
+
+        .faq-item {
+            font-size: 0.9rem;
+            color: #1f5157;
+            border-left: 3px solid #5b9da5;
+            padding-left: 12px;
+            flex: 1 1 180px;
+        }
+
+        .faq-item strong {
+            font-weight: 570;
+            color: #1b4c52;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* 页尾访问提示 */
+        .footer-access {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 28px 28px 24px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(45, 95, 102, 0.02);
+            border: 1px solid #cfe2e6;
+        }
+
+        .footer-access p {
+            font-size: 1rem;
+            color: #1b5258;
+            margin-bottom: 6px;
+        }
+
+        .footer-access .access-line {
+            font-size: 1.3rem;
+            letter-spacing: -0.3px;
+            background: #dceef2;
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 60px;
+            font-weight: 400;
+            margin-top: 6px;
+        }
+
+        .footer-access a {
+            color: #1b5e65;
+            text-decoration: none;
+            font-weight: 420;
+            border-bottom: 1px solid #a0c6cc;
+            transition: border-color 0.15s;
+        }
+
+        .footer-access a:hover {
+            border-bottom: 1px solid #22686f;
+            color: #114248;
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 0.78rem;
+            color: #608187;
+            letter-spacing: 0.3px;
+            border-top: 1px solid #d3e7eb;
+            padding-top: 18px;
+        }
+
+        /* 响应式细节 */
+        @media (max-width: 700px) {
+            .magazine-hero {
+                padding: 32px 20px 28px;
+                border-radius: 28px 28px 14px 14px;
+            }
+
+            .hero-title {
+                font-size: 1.9rem;
+            }
+
+            .context-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .feature-item,
+            .feature-item:nth-child(even) {
+                flex-direction: column;
+                gap: 12px;
+                padding: 24px 20px;
+            }
+
+            .feature-index {
+                min-width: auto;
+                font-size: 1.4rem;
+            }
+
+            .faq-row {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .footer-access .access-line {
+                font-size: 1.1rem;
+                padding: 4px 18px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            .hero-sub {
+                font-size: 0.85rem;
+                padding: 6px 14px;
+            }
+            .page {
+                padding: 16px 0 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- 首页横幅 -->
+    <div class="magazine-hero">
+        <span class="hero-label">✦ 专题 · 流动的秩序</span>
+        <h1 class="hero-title">雷速 · 信息的节拍与回声</h1>
+        <div class="hero-sub">从碎片信号到结构叙事，重新理解内容的速度</div>
+    </div>
+
+    <!-- 背景说明：网格卡片 -->
+    <div class="context-grid">
+        <div class="context-card">
+            <span class="card-icon">🌱</span>
+            <h3>不止于快</h3>
+            <p>在信息密集的河道中，人们常常追逐「第一时间」。而「雷速」所指向的，不只是抵达的速度，更是信号被接收、被解析、被再度讲述的完整周期。节奏本身就是语言。</p>
+        </div>
+        <div class="context-card">
+            <span class="card-icon">🔍</span>
+            <h3>背景中的底色</h3>
+            <p>每一个事件的发生都藏在无数前序的微光里。雷速的背后，是对线索的梳理、对脉络的耐心——不是表面的喧哗，而是理解层叠的沉积岩。</p>
+        </div>
+    </div>
+
+    <!-- 三段自然介绍：杂志专题式 -->
+    <div class="feature-flow">
+        <div class="feature-item">
+            <div class="feature-index">01</div>
+            <div class="feature-content">
+                <h2>信号 · 从噪点到模式</h2>
+                <p>我们每天接触数以千计的信息片段。雷速意味着辨识——哪些是真实的脉冲，哪些只是背景杂音。通过跨领域的信息编织，原本孤立的「噪点」逐渐显现出结构。这是理解的开端。</p>
+                <span class="meta-tag">Pattern recognition</span>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-index">02</div>
+            <div class="feature-content">
+                <h2>共振 · 微内容的传导</h2>
+                <p>一条短讯、一段画面、一句评论，在合适的介质中可能引发持续的涟漪。雷速描述的不是爆发，而是传导率——内容如何在不同圈层间流动、变形、被重新诠释。真正的速度是有纹理的。</p>
+                <span class="meta-tag">Resonance & transfer</span>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-index">03</div>
+            <div class="feature-content">
+                <h2>沉淀 · 可翻阅的档案</h2>
+                <p>当信息潮退去，留下的不是痕迹，而是视角。雷速同样关乎记忆——那些被快速传递的内容，是否值得被再次提取、对照、反思。在瞬息之后，是安静沉积的档案意识。</p>
+                <span class="meta-tag">Layered archive</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ 摘要 -->
+    <div class="faq-preview">
+        <h3>📋 专题摘记 · 常见视角</h3>
+        <div class="faq-row">
+            <div class="faq-item">
+                <strong>雷速与时效的关系？</strong>
+                时效是外部刻度，而雷速更关注内容内在的响应节拍。两者有时同步，有时错位。
+            </div>
+            <div class="faq-item">
+                <strong>信息密度如何影响理解？</strong>
+                密度并非负担。当我们找到内容的「锚点」，高密度信息反而成为理解的捷径。
+            </div>
+            <div class="faq-item">
+                <strong>如何开始自己的梳理？</strong>
+                从最小的兴趣点出发，用「关联」代替「收藏」，让信息自然形成网络。
+            </div>
+        </div>
+    </div>
+
+    <!-- 页尾访问提示 -->
+    <div class="footer-access">
+        <p>如果你对信息流的节奏与结构有更多好奇，</p>
+        <div class="access-line">
+            <a href="https://home--leisu.com">雷速</a> · 持续的内容田野
+        </div>
+        <p style="margin-top: 10px; font-size:0.9rem; color:#3b6f76;">一处安静观察、梳理与连接的所在</p>
+        <div class="footer-note">
+            <span>杂志专题 · 编号 bc93ef4c1c0f7c03</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
